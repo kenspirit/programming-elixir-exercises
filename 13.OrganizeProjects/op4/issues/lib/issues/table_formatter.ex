@@ -3,7 +3,7 @@ defmodule Issues.TableFormatter do
 
   def print_table_for_columns(rows, headers) do
     with data_by_columns = split_into_columns(rows, headers),
-      column_widths = width_ofs(data_by_columns),
+      column_widths = widths_of(data_by_columns),
       format = format_for(column_widths)
     do
       puts_one_line_in_columns(headers, format)

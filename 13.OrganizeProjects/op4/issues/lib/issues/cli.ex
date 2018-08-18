@@ -49,12 +49,14 @@ defmodule Issues.CLI do
   end
 
   def process({ user, project, count }) do
+    import Issues.TableFormatter, only: [ print_table_for_columns: 2 ]
+
     Issues.GithubIssues.fetch(user, project)
     |> decode_response()
     |> sort_into_descending_order()
     |> last(count)
     |> pick_table_fields()
-    |> print_table()
+    |> print_table_for_columns(["number", "created_at", "title"])
   end
 
   def decode_response({ :ok, body }), do: body
