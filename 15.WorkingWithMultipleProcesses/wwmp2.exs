@@ -1,5 +1,7 @@
 defmodule Spawn do
   def echo(pid) do
+    # Simulate process different running time scenario
+    :timer.sleep(Enum.random(10..1000))
     receive do
       message ->
         send pid, message
@@ -10,16 +12,19 @@ defmodule Spawn do
     pid = spawn(Spawn, :echo, [self()])
     
     send pid, token
-
-    receive do
-      msg ->
-        IO.puts "Received on #{Time.utc_now()} for: #{msg}"
-    end
   end
 
-  def echo_tokens([ token1, token2 ]) do
-    spawn_process(token1)
-    spawn_process(token2)
+  def echo_tokens(tokens) do
+    Enum.each(tokens, &spawn_process/1)
+
+    # If want to ensure token1 must be received before token 2,
+    # we can move below receive block into the spawn_process method
+    Enum.each(tokens, fn _ ->
+      receive do
+        msg ->
+          IO.puts "Received on #{Time.utc_now()} for: #{msg}"
+      end
+    end)
   end
 end
 
