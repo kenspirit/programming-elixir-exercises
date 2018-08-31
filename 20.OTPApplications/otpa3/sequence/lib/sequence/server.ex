@@ -23,7 +23,10 @@ defmodule Sequence.Server do
 
   # GenServer Implementation
   def init(_) do
-    state = %State{ current_number: Sequence.Stash.get() }
+    state = %State{
+      current_number: Sequence.Stash.get(:current_number),
+      delta: Sequence.Stash.get(:delta)
+    }
     { :ok, state }
   end
 
@@ -37,7 +40,8 @@ defmodule Sequence.Server do
 
   def terminate(_reason, state) do
     IO.puts "State to be persisted: #{inspect state}"
-    Sequence.Stash.update(state)
+    Sequence.Stash.update(:current_number, state.current_number)
+    Sequence.Stash.update(:delta, state.delta)
   end
 
   def code_change("0", old_state = current_number, _extra) do

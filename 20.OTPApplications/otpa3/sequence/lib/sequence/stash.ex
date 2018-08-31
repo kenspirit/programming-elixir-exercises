@@ -2,28 +2,28 @@ defmodule Sequence.Stash do
   use GenServer
 
   # External API
-  def start_link(init_number) do
-    GenServer.start_link(__MODULE__, init_number, name: __MODULE__)
+  def start_link(init_data) do
+    GenServer.start_link(__MODULE__, init_data, name: __MODULE__)
   end
 
-  def update(val) do
-    GenServer.cast(__MODULE__, { :update, val })
+  def update(key, val) do
+    GenServer.cast(__MODULE__, { :update, key, val })
   end
 
-  def get() do
-    GenServer.call(__MODULE__, :get)
+  def get(key) do
+    GenServer.call(__MODULE__, { :get, key })
   end
 
   # GenServer Implementation
-  def init(init_number) do
-    { :ok, init_number }
+  def init(init_data) do
+    { :ok, init_data }
   end
 
-  def handle_cast({ :update, val }, _current_number) do
-    { :noreply, val }
+  def handle_cast({ :update, key, val }, current_data) do
+    { :noreply, Map.update(current_data, key, val, fn _ -> val end) }
   end
 
-  def handle_call(:get, _from, current_number) do
-    { :reply, current_number, current_number }
+  def handle_call({ :get, key }, _from, current_data) do
+    { :reply, Map.get(current_data, key), current_data }
   end
 end
