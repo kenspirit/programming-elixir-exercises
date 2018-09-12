@@ -15,6 +15,7 @@ defimpl Caesar, for: BitString do
 
   def encrypt(string, shift) do
     Enum.map(String.to_charlist(string), &(encode(&1, shift)))
+    |> to_string()
   end
 
   def rot13(string) do
@@ -52,6 +53,7 @@ defimpl Caesar, for: List do
   def encrypt(list, shift) do
     Enum.reduce(list, [], &(&2 ++ convert(&1)))
     |> Enum.map(&(encode(&1, shift)))
+    |> to_string()
   end
 
   def rot13(list) do
